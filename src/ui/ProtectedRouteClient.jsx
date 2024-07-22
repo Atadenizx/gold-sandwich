@@ -2,28 +2,34 @@ import { useEffect } from "react";
 import useUser from "../features/authentication/useUser";
 import { useNavigate } from "react-router-dom";
 import { useUserContext } from "../services/userContext";
+import Spinner from "./Spinner";
 
 function ProtectedRouteClient({ children }) {
   const { setUser } = useUserContext();
-  const { user, isLoading } = useUser();
+  const { user, isLoading, isFetching, userRole } = useUser();
   const navigate = useNavigate();
 
+  console.log(user);
+  console.log(userRole);
+
   useEffect(() => {
-    if (!isLoading) {
-      if (!user || user.email === "admin@goldsandwich.com") {
+    if (!isLoading && !isFetching) {
+      if (!user || userRole) {
+        console.log("navigating to log in from client route");
+
         return navigate("/login");
       }
-      if (user && !user.email?.includes("admin")) {
+      if (user && userRole !== "admin") {
         setUser(user);
       }
     }
-  }, [isLoading, user, navigate, setUser]);
+  }, [isLoading, user, navigate, setUser, isFetching, userRole]);
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <Spinner />;
   }
 
-  if (user && user.email !== "admin@goldsandwich.com") {
+  if (user && !userRole) {
     return children;
   }
 

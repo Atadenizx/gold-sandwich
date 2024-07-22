@@ -13,11 +13,24 @@ function useUser() {
     staleTime: 30 * 1000,
   });
 
-  console.log("user:", user);
+  let userRole = undefined;
 
-  if (error) throw new Error(error.message);
+  try {
+    if (error) throw new Error(error.message);
 
-  return { isLoading, user, isFetching };
+    userRole = user?.user?.user_metadata?.role;
+
+    console.log("user:", user);
+
+    console.log("user role:", userRole);
+  } catch (err) {
+    console.error("An error occurred:", err.message);
+  } finally {
+    if (userRole === undefined) {
+      console.log("user role is undefined");
+    }
+  }
+  return { user, isLoading, isFetching, userRole };
 }
 
 export default useUser;

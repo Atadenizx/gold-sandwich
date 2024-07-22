@@ -9,7 +9,7 @@ function useLogin() {
   const { mutate: login, isLoading } = useMutation({
     mutationFn: ({ email, password }) => loginApi({ email, password }),
     onSuccess: (user) => {
-      if (user.user.email === "admin@goldsandwich.com") navigate("/admin");
+      if (user?.user?.user_metadata?.role === "admin") navigate("/admin");
       else navigate("/profile");
     },
     onError: (error) => {

@@ -6,5 +6,6 @@ export async function getProducts() {
     console.log(error);
     throw new Error("Products could not fetched");
   }
+  console.log(products);
   return products;
 }

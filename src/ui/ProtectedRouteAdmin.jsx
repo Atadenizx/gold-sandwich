@@ -1,43 +1,31 @@
 /* eslint-disable react/prop-types */
 import { useNavigate } from "react-router-dom";
-import useUser from "../features/authentication/useUser";
 import { useEffect } from "react";
 import Spinner from "./Spinner";
+import useUser from "../features/authentication/useUser";
 
 function ProtectedRouteAdmin({ children }) {
-  const navigate = useNavigate();
   // load the authenticated user
-  const { user, isLoading, isFetching } = useUser();
+  const { user, isLoading, isFetching, userRole } = useUser();
 
-  console.log(isFetching);
+  const navigate = useNavigate();
+
   console.log(user);
-  // useEffect(() => {
-  //   if (isLoading) {
-  //     console.log("it is loading...");
-  //   }
-  //   if (!isLoading) {
-  //     console.log("user : ", user);
-  //     if (!user || !user?.email.includes("admin")) return navigate("/login");
-  //   }
-  // }, [isLoading, user, navigate]);
+  console.log(userRole);
 
   useEffect(() => {
     if (!isLoading && !isFetching) {
-      console.log("user:", user.user);
-      if (!user || !user?.user?.email?.includes("admin")) {
-        navigate("/login");
+      if (!user || !userRole || userRole !== "admin") {
+        console.log("navigating to log in from admin route");
+        return navigate("/login");
       }
     }
-  }, [isLoading, isFetching, user, navigate]);
+  }, [isLoading, isFetching, user, navigate, userRole]);
 
   if (isLoading || isFetching) return <Spinner />;
-  console.log(user?.user?.email?.includes("admin"));
-  console.log(user?.user?.email);
 
-  // if (user?.user?.email?.includes("admin")) return children;
-  if (user?.user?.email?.includes("admin")) {
-    console.log(user);
-    console.log("admin is here");
+  if (user && userRole === "admin") {
+    console.log("gonna return kids");
     return children;
   }
 

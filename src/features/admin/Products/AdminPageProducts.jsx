@@ -3,10 +3,14 @@ import { getProducts } from "../../../services/apiProductsClient";
 import { useState } from "react";
 import AdminProductItem from "./AdminProductItem";
 import Spinner from "../../../ui/Spinner";
+import Button from "../../../ui/Button";
+import Modal from "../../../ui/Modal";
+import AddOrEditProductsForm from "../../../ui/AddOrEditProductsForm";
 
 function AdminPageProducts() {
   const [isSortedBy, setIsSortedBy] = useState("id");
-  const [sortBy, setSortBy] = useState(null);
+  const [filterBy, setFilterBy] = useState(null);
+  const [openModal, setOpenModal] = useState(false);
 
   const {
     data: AdminProducts,
@@ -28,10 +32,8 @@ function AdminPageProducts() {
     }
   });
 
-  const filteredProducts = sortedProducts?.filter((product) => product.sortBy);
-
   function onFilterBy(e) {
-    setSortBy(e.target.value);
+    setFilterBy(e.target.value);
   }
 
   function onSortBy(e) {
@@ -47,7 +49,7 @@ function AdminPageProducts() {
 
   if (!isLoading) {
     return (
-      <div className="px-12">
+      <div className="relative px-12">
         <div className="flex justify-center gap-4">
           <div>
             <span>Filter by /</span>
@@ -73,6 +75,14 @@ function AdminPageProducts() {
               <option value="in_stock">In stock</option>
             </select>
           </div>
+          <div>
+            <Button
+              handleOnClick={() => setOpenModal(!openModal)}
+              type="primary"
+            >
+              Add new item
+            </Button>
+          </div>
         </div>
         <div>
           <ul>
@@ -81,6 +91,14 @@ function AdminPageProducts() {
             ))}
           </ul>
         </div>
+        {openModal && (
+          <div className="bg-blur backdrop-blur-ld absolute z-30 flex h-full w-full items-center justify-center">
+            <Modal setOpenModal={setOpenModal} openModal={openModal}>
+              {" "}
+              <AddOrEditProductsForm />
+            </Modal>
+          </div>
+        )}
       </div>
     );
   }

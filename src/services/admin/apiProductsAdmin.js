@@ -1,11 +1,15 @@
-import supabase, { supabaseUrl } from "./supabase";
+import supabase from "../supabase";
 
-// export async function getProducts() {
-//   const { data: products, error } = await supabase.from("products").select("*");
+export async function addProductApi({ product }) {
+  const { name, category, price, ingredients, allergens, in_stock } = product;
+  console.log(name);
+  const { data, error } = await supabase
+    .from("products")
+    .insert([
+      { product_name: name, category, price, ingredients, allergens, in_stock },
+    ])
+    .select();
+  console.log(error);
+}
 
-//   if (error) {
-//     console.log(error);
-//     throw new Error("Products could not fetched");
-//   }
-//   return products;
-// }
+// .insert([{ some_column: "someValue", other_column: "otherValue" }])
