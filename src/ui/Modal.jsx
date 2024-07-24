@@ -1,12 +1,14 @@
-import Input from "../ui/Input";
 import Button from "./Button";
-import Select from "./Select";
 
-function Modal({ setOpenModal, openModal, children }) {
+function Modal({ editMode, setEditMode, setOpenModal, openModal, children }) {
+  function onHandleClick() {
+    editMode ? setEditMode(!editMode) : "";
+    setOpenModal(!openModal);
+  }
   return (
     <div className="relative rounded-lg bg-yellow-300 p-20">
       <div className="absolute right-12 top-12">
-        <Button handleOnClick={() => setOpenModal(!openModal)}>X</Button>
+        <Button handleOnClick={onHandleClick}>X</Button>
       </div>
       <div>{children}</div>
     </div>

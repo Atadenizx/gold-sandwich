@@ -4,16 +4,33 @@ import Input from "./Input";
 import Select from "./Select";
 import Button from "./Button";
 import toast from "react-hot-toast";
-import useAddProduct from "../features/admin/Products/addProduct";
+import useAddProduct from "../features/admin/Products/useAddProduct";
+import useEditProduct from "../features/admin/Products/useEditProduct";
 
-function AddOrEditProductsForm() {
-  const { register, handleSubmit, reset, getValues, formState } = useForm();
+function AddOrEditProductsForm({ editMode, productToEdit = {} }) {
+  const { id: editId, ...editValues } = productToEdit;
+  console.log("product to edit id:", editId);
+  const { register, handleSubmit, reset, getValues, formState } = useForm({
+    defaultValues: editMode ? editValues : {},
+  });
 
   const { addProduct, isLoading } = useAddProduct();
+  const { editProduct } = useEditProduct();
 
   function onHandleSubmit(data) {
-    addProduct({ product: data });
-    console.log(data);
+    // productToEdit
+    //   ? editProduct({ product: data })
+    //   : addProduct({ product: data });
+    if (productToEdit) {
+      editProduct({ product: data, id: editId });
+      console.log("editing", data);
+      reset();
+    }
+    if (!productToEdit) {
+      addProduct({ product: data });
+      console.log("adding new", data);
+      reset();
+    }
     return reset();
   }
 
@@ -25,7 +42,7 @@ function AddOrEditProductsForm() {
   return (
     <div>
       <h1 className="mb-4 text-center text-xl font-semibold">
-        Add New Product
+        {editMode ? "Edit Existing Product" : "Add New Product"}
       </h1>
       <form
         id="addProductForm"
@@ -52,7 +69,7 @@ function AddOrEditProductsForm() {
         >
           Category
         </Input>
-        <Input id="ingredient" register={register}>
+        <Input id="ingredients" register={register}>
           Ingredient
         </Input>
         <Input id="allergens" register={register}>
@@ -81,7 +98,9 @@ function AddOrEditProductsForm() {
           id={"in_stock"}
           defaultValue="true"
         />
-        <Button type="secondary">Add new Item</Button>
+        <Button disabled={isLoading} type="secondary">
+          {editMode ? "Confrim Changes" : "Add New Product"}{" "}
+        </Button>
       </form>
     </div>
   );

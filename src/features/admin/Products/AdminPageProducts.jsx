@@ -6,11 +6,13 @@ import Spinner from "../../../ui/Spinner";
 import Button from "../../../ui/Button";
 import Modal from "../../../ui/Modal";
 import AddOrEditProductsForm from "../../../ui/AddOrEditProductsForm";
+import useDeleteProducts from "./useDeleteProducts";
 
 function AdminPageProducts() {
   const [isSortedBy, setIsSortedBy] = useState("id");
-  const [filterBy, setFilterBy] = useState(null);
   const [openModal, setOpenModal] = useState(false);
+  const [editMode, setEditMode] = useState(false);
+  const [productToEdit, setProductToEdit] = useState({});
 
   const {
     data: AdminProducts,
@@ -20,6 +22,8 @@ function AdminPageProducts() {
     queryKey: ["Admin_products"],
     queryFn: getProducts,
   });
+
+  const { deleteProduct } = useDeleteProducts();
 
   const sortedProducts = AdminProducts?.sort((a, b) => {
     const aValue = a[isSortedBy];
@@ -32,12 +36,14 @@ function AdminPageProducts() {
     }
   });
 
-  function onFilterBy(e) {
-    setFilterBy(e.target.value);
-  }
+  console.log(productToEdit);
 
   function onSortBy(e) {
     setIsSortedBy(e.target.value);
+  }
+
+  function onHandleDeleteProduct(id) {
+    deleteProduct(id);
   }
 
   if (isLoading)
@@ -49,7 +55,7 @@ function AdminPageProducts() {
 
   if (!isLoading) {
     return (
-      <div className="relative px-12">
+      <div className="relative h-screen px-12">
         <div className="flex justify-center gap-4">
           <div>
             <span>Filter by /</span>
@@ -85,17 +91,34 @@ function AdminPageProducts() {
           </div>
         </div>
         <div>
-          <ul>
+          <ul className="w-full">
             {sortedProducts?.map((product) => (
-              <AdminProductItem product={product} key={product.id} />
+              <AdminProductItem
+                product={product}
+                key={product.id}
+                editMode={editMode}
+                setEditMode={setEditMode}
+                setOpenModal={setOpenModal}
+                openModal={openModal}
+                onHandleDeleteProduct={onHandleDeleteProduct}
+                setProductToEdit={setProductToEdit}
+              />
             ))}
           </ul>
         </div>
         {openModal && (
-          <div className="bg-blur backdrop-blur-ld absolute z-30 flex h-full w-full items-center justify-center">
-            <Modal setOpenModal={setOpenModal} openModal={openModal}>
+          <div className="absolute z-30">
+            <Modal
+              editMode={editMode}
+              setEditMode={setEditMode}
+              setOpenModal={setOpenModal}
+              openModal={openModal}
+            >
               {" "}
-              <AddOrEditProductsForm />
+              <AddOrEditProductsForm
+                productToEdit={productToEdit}
+                editMode={editMode}
+              />
             </Modal>
           </div>
         )}

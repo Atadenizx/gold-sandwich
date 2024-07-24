@@ -1,33 +1,48 @@
 import { useState } from "react";
+import Button from "../../../ui/Button";
+import { FaEdit } from "react-icons/fa";
+import { TiDelete } from "react-icons/ti";
 
 /* eslint-disable react/prop-types */
-function AdminProductItem({ product }) {
-  const [isOpen, setIsOpen] = useState(false);
+function AdminProductItem({
+  product,
+  onHandleDeleteProduct,
+  editmode,
+  setEditMode,
+  openModal,
+  setOpenModal,
+  setProductToEdit,
+}) {
+  const { id: productId } = product;
 
-  function onHandleClick() {
-    setIsOpen(!isOpen);
+  function onHandleEdit() {
+    setOpenModal(!openModal);
+    setEditMode(!editmode);
+    setProductToEdit(product);
   }
 
-  if (isOpen) {
-    return (
-      <li onClick={onHandleClick} className="borderblack border">
-        <span>{product.product_name}</span>
-        <span>{product.price}</span>
-        <span>in stock?{product.in_stock ? "yes" : "no"}</span>
-        <span>{product.ingredients}</span>
-      </li>
-    );
+  function onHandleDelete() {
+    onHandleDeleteProduct(productId);
   }
 
   return (
-    <li
-      onClick={onHandleClick}
-      className="borderblack flex w-full gap-4 border"
-    >
-      <p>{product.id}</p>
-      <p>{product.category.toUpperCase()}</p>
-      <div>{product.product_name.toUpperCase()}</div>
-      <div>{product.price} $</div>
+    <li className="borderblack flex w-full items-center gap-4 border">
+      <p>{product?.id}</p>
+      <p>{product?.category?.toUpperCase()}</p>
+      <div>{product?.name?.toUpperCase()}</div>
+      <div>{product?.price} $</div>
+      <Button handleOnClick={onHandleEdit}>
+        <div className="flex items-center gap-1">
+          <div> Edit</div>
+          <FaEdit />
+        </div>
+      </Button>
+      <Button handleOnClick={onHandleDelete} type="primary">
+        <div className="flex items-center gap-1">
+          <div> Delete</div>
+          <TiDelete />
+        </div>
+      </Button>
     </li>
   );
 }
